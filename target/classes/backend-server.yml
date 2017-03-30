@@ -1,0 +1,26 @@
+# Spring properties
+spring:
+  application:
+     name: backend-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/sprouts-digitalmusic
+    username: manager
+    password: root
+    driver-class-authority: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+
+# Discovery Server Access
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1111/eureka/
+
+# HTTP Server
+server:
+  port: 2222   # HTTP (Tomcat) port

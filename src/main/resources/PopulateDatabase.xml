@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+ * PopulateDatabase.xml
+ *
+ * Copyright (C) 2014 Universidad de Sevilla
+ * 
+ * The use of this project is hereby constrained to the conditions of the 
+ * TDG Licence, a copy of which you may download from 
+ * http://www.tdg-seville.info/License.html
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	">
+
+    <!-- Authrity -->
+    <bean id="authority1" class="org.sprouts.digitalmusic.model.Authority">
+        <property name="authority" value="ROLE_PARENTS"/>
+    </bean>
+
+    <bean id="authority2" class="org.sprouts.digitalmusic.model.Authority">
+        <property name="authority" value="ROLE_CHILD"/>
+    </bean>
+
+    <!-- UserAccounts -->
+
+    <bean id="userAccount1" class="org.sprouts.digitalmusic.model.UserAccount">
+        <property name="username" value="Peter"/>
+        <property name="password" value="36a54fce75d935df7b0975f4656e37640b6f0f3e279ff8bb9cb30d950ac7c474ded945e6418cce26"/>
+        <property name="authorities">
+            <set>
+                <ref bean="authority1"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="userAccount2" class="org.sprouts.digitalmusic.model.UserAccount">
+        <property name="username" value="Lois"/>
+        <property name="password" value="d2b79b7b6d831ab8e1388e934041bd647acb25b8f36d88bdedac70e61c8f3b3d5552040026d09976"/>
+        <property name="authorities">
+            <set>
+                <ref bean="authority1"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="userAccount3" class="org.sprouts.digitalmusic.model.UserAccount">
+        <property name="username" value="Stewie"/>
+        <property name="password" value="3ac820c80d4545c839a675460e3cac5584c51927598d8cf5ec55293d87bafa1959450630c6e75403"/>
+        <property name="authorities">
+            <set>
+                <ref bean="authority2"/>
+            </set>
+        </property>
+    </bean>
+
+    <!-- Users -->
+
+    <bean id="user1" class="org.sprouts.digitalmusic.model.User">
+        <property name="firstName" value="Peter"/>
+        <property name="lastName" value="Griffin"/>
+        <property name="gender" value="M"/>
+        <property name="age" value="42"/>
+        <property name="userAccount" ref="userAccount1"/>
+    </bean>
+
+    <bean id="user2" class="org.sprouts.digitalmusic.model.User">
+        <property name="firstName" value="Lois"/>
+        <property name="lastName" value="Griffin"/>
+        <property name="gender" value="F"/>
+        <property name="age" value="40"/>
+        <property name="userAccount" ref="userAccount2"/>
+    </bean>
+
+    <bean id="user3" class="org.sprouts.digitalmusic.model.User">
+        <property name="firstName" value="Stewie"/>
+        <property name="lastName" value="Griffin"/>
+        <property name="gender" value="M"/>
+        <property name="age" value="1"/>
+        <property name="userAccount" ref="userAccount3"/>
+    </bean>
+
+    <!-- Cars -->
+
+    <bean id="car1" class="org.sprouts.digitalmusic.model.Car">
+        <property name="brand" value="Mercedes-Benz"/>
+        <property name="model" value="300D w124"/>
+        <property name="numberPlate" value="M 3528 GY"/>
+        <property name="user" ref="user1"/>
+    </bean>
+
+    <bean id="car2" class="org.sprouts.digitalmusic.model.Car">
+        <property name="brand" value="BMW"/>
+        <property name="model" value="320i E30"/>
+        <property name="numberPlate" value="SE 4401 BB"/>
+        <property name="user" ref="user2"/>
+    </bean>
+
+</beans>
