@@ -4,11 +4,6 @@
     <groupId>org.sprouts.digitalmusic.backend</groupId>
     <artifactId>sprouts-digitalmusic-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <parent>
-        <groupId>org.sprouts.digitalmusic</groupId>
-        <artifactId>sprouts-digitalmusic</artifactId>
-        <version>0.1</version>
-    </parent>
     <repositories>
 		<repository>
 			<id>nexus</id>
@@ -33,6 +28,11 @@
 			<url>http://nexus.sprouts-project.com:8081/repository/maven-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+	<parent>
+        <groupId>org.sprouts.digitalmusic</groupId>
+        <artifactId>sprouts-digitalmusic</artifactId>
+        <version>0.1</version>
+    </parent>
     <properties>
         <java.version>1.8</java.version>
         <start-class>org.sprouts.backend.BackEndServer</start-class>
