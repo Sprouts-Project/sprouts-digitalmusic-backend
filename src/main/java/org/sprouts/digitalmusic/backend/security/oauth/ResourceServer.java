@@ -29,8 +29,7 @@ public class ResourceServer {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .authorizeRequests()
-                    .antMatchers("/car/").permitAll()
-                    .antMatchers("/user/**").authenticated();
+                    .antMatchers("/item/").permitAll();
         }
 
     }
