@@ -1,9 +1,11 @@
 package org.sprouts.digitalmusic.backend.service;
 
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.sprouts.digitalmusic.backend.da.ItemDAO;
 import org.sprouts.digitalmusic.model.Item;
 
@@ -19,18 +21,14 @@ public class ItemService {
 	// Simple CRUD Methods ----------------------------------------------------
 	
 	public Item findOne(int id) {
-		Item result;
-		
-		result = itemDAO.findOne(id);
-		
-		return result;
+		return itemDAO.findOne(id);
 	}
 	
-	public Collection<Item> findAll() {
-		Collection<Item> result;
+	public Page<Item> findAll(int pageNumber) {
+		Assert.isTrue(pageNumber >= 0);
 		
-		result = (Collection<Item>) itemDAO.findAll();
+		Pageable pageable = new PageRequest(pageNumber, 9);
 		
-		return result;
+		return itemDAO.findAll(pageable);
 	}
 }
