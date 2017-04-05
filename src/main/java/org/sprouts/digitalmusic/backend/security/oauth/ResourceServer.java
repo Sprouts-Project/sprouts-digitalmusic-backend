@@ -32,7 +32,5 @@ public class ResourceServer {
 			.antMatchers("/admin/").hasAuthority("ADMIN")
 			.antMatchers("/item/").permitAll();
 		}
-
 	}
-
 }
