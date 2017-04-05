@@ -10,28 +10,27 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @Configuration
 public class ResourceServer {
 
-    @Configuration
-    @EnableResourceServer
-    protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+	@Configuration
+	@EnableResourceServer
+	protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
-        @Autowired
-        private CustomLogoutSuccessHandler customLogoutSuccessHandler;
+		@Autowired
+		private CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
-        @Override
-        public void configure(HttpSecurity http) throws Exception {
+		@Override
+		public void configure(HttpSecurity http) throws Exception {
 
-            http
-                    .logout()
-                    .logoutUrl("/oauth/revoke")
-                    .logoutSuccessHandler(customLogoutSuccessHandler)
-                    .and()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers("/item/").permitAll();
-        }
-
-    }
-
+			http
+			.logout()
+			.logoutUrl("/oauth/revoke")
+			.logoutSuccessHandler(customLogoutSuccessHandler)
+			.and()
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+			.authorizeRequests()
+			.antMatchers("/admin/").hasAuthority("ADMIN")
+			.antMatchers("/item/").permitAll();
+		}
+	}
 }
