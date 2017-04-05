@@ -21,7 +21,7 @@ hibernate:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:1111/eureka/
+      defaultZone: http://eureka.sprouts-project.com:8761/
 
 # HTTP Server
 server:
