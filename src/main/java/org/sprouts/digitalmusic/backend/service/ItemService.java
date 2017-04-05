@@ -13,22 +13,28 @@ import org.sprouts.digitalmusic.model.Item;
 @Service
 public class ItemService {
 
-	// Managed Data Access Objects --------------------------------------------
-	
 	@Autowired
 	private ItemDAO itemDAO;
-	
-	// Simple CRUD Methods ----------------------------------------------------
-	
+
+	public int save(Item item){
+		itemDAO.save(item);
+		return 1;
+	}
+
+	public int delete(Item item){
+		itemDAO.delete(item);
+		return 1;
+	}
+
 	public Item findOne(int id) {
 		return itemDAO.findOne(id);
 	}
-	
+
 	public Page<Item> findAll(int pageNumber) {
 		Assert.isTrue(pageNumber >= 0);
-		
+
 		Pageable pageable = new PageRequest(pageNumber, 9);
-		
+
 		return itemDAO.findAll(pageable);
 	}
 }
