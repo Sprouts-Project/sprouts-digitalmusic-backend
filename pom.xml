@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.sprouts.digitalmusic.backend</groupId>
     <artifactId>sprouts-digitalmusic-backend</artifactId>
-    <version>0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
     <repositories>
 		<repository>
 			<id>nexus</id>
-			<url>http://nexus.sprouts-project.com:8081/repository/maven-releases</url>
+			<url>http://nexus.sprouts-project.com:8081</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.sprouts.digitalmusic.model</groupId>
             <artifactId>sprouts-digitalmusic-model</artifactId>
-            <version>0.1</version>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         
         <dependency>
@@ -61,7 +61,13 @@
             <artifactId>kie-ci</artifactId>
             <version>6.1.0.Final</version>
         </dependency>
-
+        
+		<dependency>
+		    <groupId>com.amazonaws</groupId>
+		    <artifactId>aws-java-sdk</artifactId>
+		    <version>1.2.1</version>
+		</dependency>
+		
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
