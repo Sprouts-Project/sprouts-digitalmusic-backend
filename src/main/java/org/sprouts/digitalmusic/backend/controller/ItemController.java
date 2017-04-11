@@ -54,7 +54,3 @@ public class ItemController extends AbstractController {
 		return getResponseObject(itemService.delete(item));
 	}
 }
-
-
-
-
