@@ -13,7 +13,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.springframework.stereotype.Service;
-import org.sprouts.digitalmusic.model.parser.CustomerOverview;
+import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
+import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
 
 import com.amazonaws.util.Base64;
 import com.amazonaws.util.IOUtils;
@@ -56,6 +57,39 @@ public class DashboardService {
 			customerOverview = new CustomerOverview();
 		}
 		return customerOverview;
+	}
+	
+	public FinanceOverview getFinanceOverview() {
+		FinanceOverview financeOverview;
+		try {
+			disableSSL();
+			String url = "https://warehouse.sprouts-project.com/warehouse/finances_overview";
+			String userPassword = "admin" + ":" + "sup3r-4dm1n-pa$$-rE$t-H3ART";
+			byte[] authEncBytes = Base64.encode(userPassword.getBytes());
+			String authStringEnc = new String(authEncBytes);
+
+			URL obj = new URL(url);
+
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is GET
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+
+			String response = IOUtils.toString(con.getInputStream());				
+			
+			JSONObject json = new JSONObject(response);
+			String embedded_obj = json.get("_embedded").toString();
+			
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			List<FinanceOverview> array = mapper.readValue(embedded_obj,new TypeReference<List<FinanceOverview>>() {});
+			financeOverview = array.get(0);
+				
+		} catch (Exception e) {
+			financeOverview = new FinanceOverview();
+		}
+		return financeOverview;
 	}
 
 	/***** DISABLE CERTIFICATES ******/
