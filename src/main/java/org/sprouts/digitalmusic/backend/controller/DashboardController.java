@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.sprouts.digitalmusic.backend.service.DashboardService;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
+import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
 import io.swagger.annotations.Api;
 
@@ -30,4 +31,11 @@ public class DashboardController extends AbstractController {
 		FinanceOverview financeOverview = dashboardService.getFinanceOverview();
 		return financeOverview;
 	}
+	
+	@RequestMapping(value = "/operation-overview", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public StockOverview operationOverview() throws Exception {
+		StockOverview stockOverview = dashboardService.getStockOverview();
+		return stockOverview;
+	}
+	
 }

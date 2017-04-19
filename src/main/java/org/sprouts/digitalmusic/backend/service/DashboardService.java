@@ -15,6 +15,7 @@ import javax.net.ssl.X509TrustManager;
 import org.springframework.stereotype.Service;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
+import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
 import com.amazonaws.util.Base64;
 import com.amazonaws.util.IOUtils;
@@ -26,14 +27,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service("dashboardService")
 public class DashboardService {
 
+	private static String user = "admin";
+	private static String pass = "sup3r-4dm1n-pa$$-rE$t-H3ART";
+	
 	public CustomerOverview getCustomerOverview() {
 		CustomerOverview customerOverview;
 		try {
 			disableSSL();
 			String url = "https://warehouse.sprouts-project.com/warehouse/customer_overview";
-			String userPassword = "admin" + ":" + "sup3r-4dm1n-pa$$-rE$t-H3ART";
-			byte[] authEncBytes = Base64.encode(userPassword.getBytes());
-			String authStringEnc = new String(authEncBytes);
+			String authStringEnc = new String(Base64.encode((user + ":" + pass).getBytes()));
 
 			URL obj = new URL(url);
 
@@ -64,9 +66,7 @@ public class DashboardService {
 		try {
 			disableSSL();
 			String url = "https://warehouse.sprouts-project.com/warehouse/finances_overview";
-			String userPassword = "admin" + ":" + "sup3r-4dm1n-pa$$-rE$t-H3ART";
-			byte[] authEncBytes = Base64.encode(userPassword.getBytes());
-			String authStringEnc = new String(authEncBytes);
+			String authStringEnc = new String(Base64.encode((user + ":" + pass).getBytes()));
 
 			URL obj = new URL(url);
 
@@ -90,6 +90,37 @@ public class DashboardService {
 			financeOverview = new FinanceOverview();
 		}
 		return financeOverview;
+	}
+	
+	public StockOverview getStockOverview() {
+		StockOverview stockOverview;
+		try {
+			disableSSL();
+			String url = "https://warehouse.sprouts-project.com/warehouse/stock_overview";
+			String authStringEnc = new String(Base64.encode((user + ":" + pass).getBytes()));
+
+			URL obj = new URL(url);
+
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is GET
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+
+			String response = IOUtils.toString(con.getInputStream());				
+			
+			JSONObject json = new JSONObject(response);
+			String embedded_obj = json.get("_embedded").toString();
+			
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			List<StockOverview> array = mapper.readValue(embedded_obj,new TypeReference<List<StockOverview>>() {});
+			stockOverview = array.get(0);
+				
+		} catch (Exception e) {
+			stockOverview = new StockOverview();
+		}
+		return stockOverview;
 	}
 
 	/***** DISABLE CERTIFICATES ******/
@@ -120,14 +151,12 @@ public class DashboardService {
 		@Override
 		public void checkClientTrusted(java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
 				String paramString) throws CertificateException {
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public void checkServerTrusted(java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
 				String paramString) throws CertificateException {
-			// TODO Auto-generated method stub
 
 		}
 	}
