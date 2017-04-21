@@ -1,8 +1,12 @@
 package org.sprouts.digitalmusic.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.sprouts.digitalmusic.backend.da.CustomerDAO;
+import org.sprouts.digitalmusic.backend.security.UserDetailsService;
+import org.sprouts.digitalmusic.forms.CustomerForm;
 import org.sprouts.digitalmusic.model.Customer;
 import org.sprouts.digitalmusic.model.UserAccount;
 
@@ -28,4 +32,39 @@ public class CustomerService {
         customerDAO.save(customer);
         return 1;
     }
+
+    private Customer findByUsername(String username) {
+        Customer principal = customerDAO.findByUsername(username);
+        return principal;
+    }
+
+    public Customer getCustomerInfo() {
+        Customer principal = findByUsername(UserDetailsService.getPrincipal().getUsername());
+        principal.getUserAccount().setPassword("");
+        return principal;
+    }
+
+    public Integer edit(CustomerForm customerForm) {
+        Customer principal = findByUsername(UserDetailsService.getPrincipal().getUsername());
+        StandardPasswordEncoder standardPasswordEncoder = new StandardPasswordEncoder();
+        Assert.isTrue(standardPasswordEncoder.matches(customerForm.getOldPassword(),principal.getUserAccount().getPassword()));
+
+        if (!principal.getName().equals(customerForm.getName()))
+            principal.setName(customerForm.getName());
+        if (!principal.getEmail().equals(customerForm.getEmail()))
+            principal.setEmail(customerForm.getEmail());
+        if (!principal.getBirthdate().equals(customerForm.getBirthdate()))
+            principal.setBirthdate(customerForm.getBirthdate());
+        if (!principal.getSex().equals(customerForm.getSex()))
+            principal.setSex(customerForm.getSex());
+        if (!principal.getState().equals(customerForm.getState()))
+            principal.setState(customerForm.getState());
+        if (!principal.getUserAccount().getUsername().equals(customerForm.getUsername()))
+            principal.getUserAccount().setUsername(customerForm.getUsername());
+        if (!customerForm.getPassword().isEmpty() && !standardPasswordEncoder.matches(customerForm.getPassword(), principal.getUserAccount().getPassword()))
+            principal.getUserAccount().setPassword(standardPasswordEncoder.encode(customerForm.getPassword()));
+        customerDAO.save(principal);
+        return 1;
+    }
+
 }
