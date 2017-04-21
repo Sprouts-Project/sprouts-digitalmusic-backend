@@ -1,5 +1,6 @@
 package org.sprouts.digitalmusic.backend;
-
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -35,9 +36,9 @@ public class BackEndServer implements ApplicationRunner {
           .build();
     }
 	
-	//@Bean
-	//public KieContainer kieContainer() {
-	//	return KieServices.Factory.get().getKieClasspathContainer();
-	//}
+	@Bean
+	public KieContainer kieContainer() {
+		return KieServices.Factory.get().getKieClasspathContainer();
+	}
 
 }

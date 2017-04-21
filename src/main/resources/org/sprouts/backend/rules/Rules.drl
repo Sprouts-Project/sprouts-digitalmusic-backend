@@ -1,0 +1,14 @@
+package org.sprouts.backend.rules;
+
+import org.sprouts.digitalmusic.model.*;
+import org.sprouts.digitalmusic.backend.service.ItemService
+
+
+global ItemService itemService;
+
+rule "Item deletion"
+    when
+    	item : Item((int) item.id <= 0);
+    then
+        throw new Exception("Cannot delete an item with an id that is equal or less than 0");
+end

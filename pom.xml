@@ -7,6 +7,10 @@
   <version>0.2</version>
   <repositories>
     <repository>
+      <id>central</id>
+      <url>http://repo.maven.apache.org/maven2</url>
+    </repository>
+    <repository>
       <id>nexus</id>
       <url>http://nexus.sprouts-project.com:8081/repository/maven-releases</url>
       <releases>
@@ -60,7 +64,7 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-ci</artifactId>
-      <version>6.1.0.Final</version>
+      <version>6.5.0.Final</version>
     </dependency>
 
     <dependency>
