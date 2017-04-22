@@ -60,7 +60,7 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-ci</artifactId>
-      <version>6.1.0.Final</version>
+      <version>6.5.0.Final</version>
     </dependency>
 
     <dependency>
