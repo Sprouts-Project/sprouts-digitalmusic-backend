@@ -6,6 +6,7 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -18,6 +19,7 @@ import javax.net.ssl.X509TrustManager;
 import org.springframework.stereotype.Service;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
+import org.sprouts.digitalmusic.model.parser.finance.SalesPredictionsByItemProfiles;
 import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
 import com.amazonaws.util.Base64;
@@ -33,74 +35,80 @@ public class DashboardService {
 
 	private static String user = "admin";
 	private static String pass = "sup3r-4dm1n-pa$$-rE$t-H3ART";
-	
+
 	public CustomerOverview getCustomerOverview() {
 		CustomerOverview customerOverview;
+
 		try {
-			disableSSL();
-			String url = "https://warehouse.sprouts-project.com/warehouse/customer_overview";
-			String authStringEnc = new String(Base64.encode((user + ":" + pass).getBytes()));
-
-			URL obj = new URL(url);
-
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is GET
-			con.setRequestMethod("GET");
-			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
-
-			String response = IOUtils.toString(con.getInputStream());				
-			
-			JSONObject json = new JSONObject(response);
-			String embedded_obj = json.get("_embedded").toString();
-			
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			List<CustomerOverview> array = mapper.readValue(embedded_obj,new TypeReference<List<CustomerOverview>>() {});
-			customerOverview = array.get(0);
-				
-		} catch (Exception e) {
+			List<CustomerOverview> customerOverviews;
+			customerOverviews = getObjectMapper().readValue(getResults("customer_overview"),
+					new TypeReference<List<CustomerOverview>>() {
+					});
+			customerOverview = customerOverviews.get(0);
+		} catch (IOException e) {
 			customerOverview = new CustomerOverview();
 		}
 		return customerOverview;
 	}
-	
+
 	public FinanceOverview getFinanceOverview() {
 		FinanceOverview financeOverview;
+
 		try {
-			disableSSL();
-			String url = "https://warehouse.sprouts-project.com/warehouse/finances_overview";
-			String authStringEnc = new String(Base64.encode((user + ":" + pass).getBytes()));
-
-			URL obj = new URL(url);
-
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is GET
-			con.setRequestMethod("GET");
-			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
-
-			String response = IOUtils.toString(con.getInputStream());				
-			
-			JSONObject json = new JSONObject(response);
-			String embedded_obj = json.get("_embedded").toString();
-			
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			List<FinanceOverview> array = mapper.readValue(embedded_obj,new TypeReference<List<FinanceOverview>>() {});
-			financeOverview = array.get(0);
-				
-		} catch (Exception e) {
+			List<FinanceOverview> financeOverviews;
+			financeOverviews = getObjectMapper().readValue(getResults("finances_overview"),
+					new TypeReference<List<FinanceOverview>>() {
+					});
+			financeOverview = financeOverviews.get(0);
+		} catch (IOException e) {
 			financeOverview = new FinanceOverview();
 		}
 		return financeOverview;
 	}
-	
+
 	public StockOverview getStockOverview() {
 		StockOverview stockOverview;
+
+		try {
+			List<StockOverview> stockOverviews;
+			stockOverviews = getObjectMapper().readValue(getResults("stock_overview"),
+					new TypeReference<List<StockOverview>>() {
+					});
+			stockOverview = stockOverviews.get(0);
+		} catch (IOException e) {
+			stockOverview = new StockOverview();
+		}
+		return stockOverview;
+	}
+
+	public List<SalesPredictionsByItemProfiles> getSalesPredictionsByItemProfiles() {
+		List<SalesPredictionsByItemProfiles> salesPredictionsByItemProfiles;
+
+		try {
+			salesPredictionsByItemProfiles = getObjectMapper().readValue(
+					getResults("sales_predictions_by_item_profiles"),
+					new TypeReference<List<SalesPredictionsByItemProfiles>>() {
+					});
+		} catch (IOException e) {
+			salesPredictionsByItemProfiles = new ArrayList<>();
+		}
+
+		return salesPredictionsByItemProfiles;
+	}
+
+	/*** Returns a configured ObjectMapper instance */
+	public static ObjectMapper getObjectMapper() {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return mapper;
+	}
+
+	/*** Returns an String representing the warehouse response */
+	public static String getResults(String collection) {
+		String embeddedObj;
 		try {
 			disableSSL();
-			String url = "https://warehouse.sprouts-project.com/warehouse/stock_overview";
+			String url = "https://warehouse.sprouts-project.com/warehouse/" + collection;
 			String authStringEnc = new String(Base64.encode((user + ":" + pass).getBytes()));
 
 			URL obj = new URL(url);
@@ -111,22 +119,17 @@ public class DashboardService {
 			con.setRequestMethod("GET");
 			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
 
-			String response = IOUtils.toString(con.getInputStream());				
-			
+			String response = IOUtils.toString(con.getInputStream());
+
 			JSONObject json = new JSONObject(response);
-			String embeddedObj = json.get("_embedded").toString();
-			
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			List<StockOverview> array = mapper.readValue(embeddedObj,new TypeReference<List<StockOverview>>() {});
-			stockOverview = array.get(0);
-				
+			embeddedObj = json.get("_embedded").toString();
+
 		} catch (IOException e) {
-			stockOverview = new StockOverview();
+			embeddedObj = "";
 		} catch (JSONException e) {
-			stockOverview = new StockOverview();
+			embeddedObj = "";
 		}
-		return stockOverview;
+		return embeddedObj;
 	}
 
 	/***** DISABLE CERTIFICATES ******/
@@ -146,9 +149,9 @@ public class DashboardService {
 			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 		} catch (NoSuchAlgorithmException e) {
-			
+
 		} catch (KeyManagementException e) {
-			
+
 		}
 	}
 
