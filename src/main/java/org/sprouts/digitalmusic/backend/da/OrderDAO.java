@@ -13,4 +13,7 @@ public interface OrderDAO extends CrudRepository<Order, Integer> {
 
     @Query("select o from Order o order by o.date desc")
     Page<Order> findAllOrderByDeliveredDateDesc(Pageable pageable);
+
+    @Query("select count(oi) from OrderedItem oi where oi.order.customer.id=?1")
+    int findNumberOfOrderedItems(int id);
 }
