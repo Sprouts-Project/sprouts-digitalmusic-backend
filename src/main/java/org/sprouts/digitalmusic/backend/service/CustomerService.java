@@ -8,7 +8,11 @@ import org.sprouts.digitalmusic.backend.da.CustomerDAO;
 import org.sprouts.digitalmusic.backend.security.UserDetailsService;
 import org.sprouts.digitalmusic.forms.CustomerForm;
 import org.sprouts.digitalmusic.model.Customer;
+import org.sprouts.digitalmusic.model.Item;
+import org.sprouts.digitalmusic.model.ShoppingCart;
 import org.sprouts.digitalmusic.model.UserAccount;
+
+import java.util.ArrayList;
 
 @Service
 public class CustomerService {
@@ -23,17 +27,24 @@ public class CustomerService {
     @Autowired
     private UserAccountService userAccountService;
 
+    @Autowired
+    private ShoppingCartService shoppingCartService;
+
     // Simple CRUD Methods ----------------------------------------------------
 
     public int save(Customer customer) {
         UserAccount userAccount = customer.getUserAccount();
         UserAccount userAccountDB = userAccountService.save(userAccount);
         customer.setUserAccount(userAccountDB);
-        customerDAO.save(customer);
+        Customer customerDB = customerDAO.save(customer);
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setCustomer(customerDB);
+        shoppingCart.setItems(new ArrayList<>());
+        shoppingCartService.save(shoppingCart);
         return 1;
     }
 
-    private Customer findByUsername(String username) {
+    public Customer findByUsername(String username) {
         Customer principal = customerDAO.findByUsername(username);
         return principal;
     }
