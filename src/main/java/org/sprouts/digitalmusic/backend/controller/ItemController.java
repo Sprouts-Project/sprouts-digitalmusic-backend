@@ -35,13 +35,10 @@ public class ItemController extends AbstractController {
 		return result;
 	}
 
-	@RequestMapping(value = "/admin/edit", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Item edit(@RequestParam int itemId) {
-		Item item;
+	@RequestMapping(value = "/display", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Item view(@RequestParam int itemId) {
 
-		item = itemService.findOne(itemId);
-
-		return item;
+		return itemService.findOne(itemId);
 	}
 
 	@RequestMapping(value = "/admin/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

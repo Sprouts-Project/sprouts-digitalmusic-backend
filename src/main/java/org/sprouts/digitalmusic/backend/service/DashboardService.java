@@ -1,7 +1,5 @@
 package org.sprouts.digitalmusic.backend.service;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,7 +15,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
