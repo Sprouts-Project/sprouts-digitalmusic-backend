@@ -25,28 +25,23 @@ public class ShoppingCartController extends AbstractController {
 	public Collection<Item> list() throws Exception {
 		
 		return shoppingCartService.findByPrincipal().getItems();
-		
 	}
 	
-	@RequestMapping(value = "/addItem", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/addItem", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void addItem(@RequestParam int itemId) throws Exception {
 		
 		shoppingCartService.addItem(itemId);
-		
 	}
 
-	@RequestMapping(value = "/deleteItem", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/deleteItem", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void deleteItem(@RequestParam int itemId) throws Exception {
 		
 		shoppingCartService.deleteItem(itemId);
-		
 	}
 	
-	@RequestMapping(value = "/clear", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/clear", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void clear() throws Exception {
 		
 		shoppingCartService.clear();
-		
 	}
-	
 }
