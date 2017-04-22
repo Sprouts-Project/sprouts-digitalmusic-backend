@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.sprouts.digitalmusic.backend.da.ShoppingCartDAO;
 import org.sprouts.digitalmusic.backend.security.UserDetailsService;
 import org.sprouts.digitalmusic.model.Customer;
+import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.ShoppingCart;
 
 @Service
@@ -19,6 +20,9 @@ public class ShoppingCartService {
 
     @Autowired
     private CustomerService customerService;
+    
+    @Autowired
+    private ItemService itemService;
 
     // Simple CRUD Methods ----------------------------------------------------
 
@@ -28,6 +32,22 @@ public class ShoppingCartService {
         return shoppingCart;
     }
 
+    public void addItem(int id){
+    	Item item = itemService.findOne(id);
+    	ShoppingCart shoppingCart = findByPrincipal();
+    	shoppingCart.getItems().add(item);
+        shoppingCartDAO.save(shoppingCart);
+
+    }
+    
+    public void deleteItem(int id){
+    	Item item = itemService.findOne(id);
+    	ShoppingCart shoppingCart = findByPrincipal();
+    	shoppingCart.getItems().remove(item);
+        shoppingCartDAO.save(shoppingCart);
+
+    }
+    
     public void clear() {
         ShoppingCart shoppingCart = findByPrincipal();
         shoppingCart.getItems().clear();
