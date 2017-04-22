@@ -1,14 +1,14 @@
 package org.sprouts.digitalmusic.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.sprouts.digitalmusic.backend.da.OrderDAO;
 import org.sprouts.digitalmusic.backend.security.UserDetailsService;
-import org.sprouts.digitalmusic.model.Customer;
-import org.sprouts.digitalmusic.model.Order;
-import org.sprouts.digitalmusic.model.OrderedItem;
-import org.sprouts.digitalmusic.model.ShoppingCart;
+import org.sprouts.digitalmusic.model.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,4 +64,16 @@ public class OrderService {
         return 1;
     }
 
+    public Page<Order> findAll(int pageNumber) {
+        Assert.isTrue(pageNumber >= 0);
+        Pageable pageable = new PageRequest(pageNumber, 10);
+        return orderDAO.findAllOrderByDeliveredDateDesc(pageable);
+    }
+
+    public Integer markAsDelivered(int orderId) {
+        Order order = orderDAO.findOne(orderId);
+        order.setDeliveredDate(new Date());
+        orderDAO.save(order);
+        return 1;
+    }
 }

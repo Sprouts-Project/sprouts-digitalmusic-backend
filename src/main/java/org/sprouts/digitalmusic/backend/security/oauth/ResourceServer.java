@@ -28,11 +28,13 @@ public class ResourceServer {
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
+                    .anonymous().and()
                     .authorizeRequests()
-                    .antMatchers("/admin/").hasAuthority("ADMIN")
-                    .antMatchers("/customer/").hasAuthority("USER")
-                    .antMatchers("/order/").hasAuthority("USER")
-                    .antMatchers("/item/").permitAll();
+                    .antMatchers("/admin/*").hasAuthority("ADMIN")
+                    .antMatchers("/order/admin/*").hasAuthority("ADMIN")
+                    .antMatchers("/customer/*").hasAuthority("USER")
+                    .antMatchers("/order/*").hasAuthority("USER")
+                    .antMatchers("/item/*").permitAll();
         }
     }
 }
