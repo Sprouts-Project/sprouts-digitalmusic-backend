@@ -1,0 +1,17 @@
+package org.sprouts.backend.rules;
+
+import org.sprouts.digitalmusic.model.*;
+import org.sprouts.digitalmusic.backend.service.OrderService;
+
+global OrderService orderService;
+
+
+rule "10% discount for 5 products"
+    when
+    	order: Order()
+    then
+        int num = orderService.findNumberOfOrderedItems();
+        if(num >= 5){
+            order.setTotalPrice((double)Math.round(order.getTotalPrice()*0.9 * 100d) / 100d);
+        }
+end

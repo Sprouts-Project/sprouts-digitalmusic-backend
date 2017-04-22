@@ -1,5 +1,7 @@
 package org.sprouts.digitalmusic.backend.service;
 
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +35,9 @@ public class OrderService {
     @Autowired
     private OrderedItemService orderedItemService;
 
+    @Autowired
+    private KieContainer kieContainer;
+
     // Simple CRUD Methods ----------------------------------------------------
 
     public Integer save(Order order) {
@@ -58,6 +63,11 @@ public class OrderService {
         });
         order.setTotalPrice(orderedItems.stream().mapToDouble(orderedItem -> orderedItem.getQuantity() * orderedItem.getPrice()).sum());
 
+        KieSession kieSession = kieContainer.newKieSession("Session");
+        kieSession.insert(order);
+        kieSession.setGlobal("orderService", this);
+        kieSession.fireAllRules();
+
         orderDAO.save(order);
         orderedItemService.saveAll(orderedItems);
         shoppingCartService.clear();
@@ -75,5 +85,11 @@ public class OrderService {
         order.setDeliveredDate(new Date());
         orderDAO.save(order);
         return 1;
+    }
+
+    public int findNumberOfOrderedItems(){
+        Customer principal = customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
+        int num = orderDAO.findNumberOfOrderedItems(principal.getId());
+        return num;
     }
 }
