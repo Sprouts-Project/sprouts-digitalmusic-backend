@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.sprouts.digitalmusic.backend.da.ReviewDAO;
+import org.sprouts.digitalmusic.backend.security.UserDetailsService;
 import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.Review;
 
@@ -15,11 +16,21 @@ public class ReviewService {
 
 	@Autowired
 	private ReviewDAO reviewDAO;
+	
+	@Autowired
+	private CustomerService customerService;
+	
+	@Autowired
+	private ItemService itemService;
 
 	// Simple CRUD Methods ----------------------------------------------------
 
-	public int save(Review review){
-
+	public int save(Review review, int itemId){
+		review.setCustomer(customerService.findByUsername(UserDetailsService.getPrincipal().getUsername()));
+		review.setItem(itemService.findOne(itemId));
+		review.setHelpful(0);
+		review.setOverall(0);
+		review.setUnhelpful(0);
 		reviewDAO.save(review);
 		return 1;
 	}

@@ -50,4 +50,11 @@ public class ItemController extends AbstractController {
 	public ResponseObject deleteItem(@RequestBody Item item) throws Exception {
 		return getResponseObject(itemService.delete(item));
 	}
+	
+	@RequestMapping(value = "/itemBoughtByCostumer", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public boolean itemBoughtByCostumer(@RequestParam int itemId) {
+		
+		return itemService.itemBoughtByCostumer(itemId);
+		
+	}
 }
