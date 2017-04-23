@@ -17,9 +17,15 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.springframework.stereotype.Service;
+import org.sprouts.digitalmusic.model.parser.customer.BestReviewers;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
+import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndBrand;
+import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndItemProfile;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
+import org.sprouts.digitalmusic.model.parser.finance.MonthlySalesPredictions;
 import org.sprouts.digitalmusic.model.parser.finance.SalesPredictionsByItemProfiles;
+import org.sprouts.digitalmusic.model.parser.items.ItemProfile;
+import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
 import com.amazonaws.util.Base64;
@@ -94,6 +100,97 @@ public class DashboardService {
 		}
 
 		return salesPredictionsByItemProfiles;
+	}
+	
+	
+	public List<MonthlySalesPredictions> getMonthlySalesPredictions() {
+		List<MonthlySalesPredictions> monthlySalesPredictions;
+
+		try {
+			monthlySalesPredictions = getObjectMapper().readValue(
+					getResults("sales_value_predictions"),
+					new TypeReference<List<MonthlySalesPredictions>>() {
+					});
+		} catch (IOException e) {
+			monthlySalesPredictions = new ArrayList<>();
+		}
+
+		return monthlySalesPredictions;
+	}
+	
+	public List<BestReviewers> getBestReviewers() {
+		List<BestReviewers> bestReviewers;
+
+		try {
+			bestReviewers = getObjectMapper().readValue(
+					getResults("best_reviewers"),
+					new TypeReference<List<BestReviewers>>() {
+					});
+		} catch (IOException e) {
+			bestReviewers = new ArrayList<>();
+		}
+
+		return bestReviewers;
+	}
+	
+	public List<CustomerSegmentationAgeAndBrand> getCustomerSegmentationAgeAndBrand() {
+		List<CustomerSegmentationAgeAndBrand> customerSegmentationAgeAndBrand;
+
+		try {
+			customerSegmentationAgeAndBrand = getObjectMapper().readValue(
+					getResults("customer_segmentation_age_and_brand"),
+					new TypeReference<List<CustomerSegmentationAgeAndBrand>>() {
+					});
+		} catch (IOException e) {
+			customerSegmentationAgeAndBrand = new ArrayList<>();
+		}
+
+		return customerSegmentationAgeAndBrand;
+	}
+	
+	public List<CustomerSegmentationAgeAndItemProfile> getCustomerSegmentationAgeAndItemProfile() {
+		List<CustomerSegmentationAgeAndItemProfile> customerSegmentationAgeAndItemProfile;
+
+		try {
+			customerSegmentationAgeAndItemProfile = getObjectMapper().readValue(
+					getResults("customer_segmentation_age_and_item_profile"),
+					new TypeReference<List<CustomerSegmentationAgeAndItemProfile>>() {
+					});
+		} catch (IOException e) {
+			customerSegmentationAgeAndItemProfile = new ArrayList<>();
+		}
+
+		return customerSegmentationAgeAndItemProfile;
+	}
+	
+	public List<ItemProfile> getItemProfile() {
+		List<ItemProfile> itemProfile;
+
+		try {
+			itemProfile = getObjectMapper().readValue(
+					getResults("item_profiles"),
+					new TypeReference<List<ItemProfile>>() {
+					});
+		} catch (IOException e) {
+			itemProfile = new ArrayList<>();
+		}
+
+		return itemProfile;
+	}
+	
+	public List<AlsoBoughtRecommender> getAlsoBoughtRecommender() {
+		List<AlsoBoughtRecommender> alsoBoughtRecommender;
+
+		try {
+			alsoBoughtRecommender = getObjectMapper().readValue(
+					getResults("also_bought_recommender"),
+					new TypeReference<List<AlsoBoughtRecommender>>() {
+					});
+		} catch (IOException e) {
+			alsoBoughtRecommender = new ArrayList<>();
+		}
+
+		return alsoBoughtRecommender;
 	}
 
 	/*** Returns a configured ObjectMapper instance */
