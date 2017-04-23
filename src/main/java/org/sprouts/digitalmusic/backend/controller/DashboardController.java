@@ -12,11 +12,13 @@ import org.sprouts.digitalmusic.model.parser.customer.BestReviewers;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndBrand;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndItemProfile;
+import org.sprouts.digitalmusic.model.parser.finance.FinanceMonthlySalesPredictions;
+import org.sprouts.digitalmusic.model.parser.finance.FinanceMonthlySalesPredictionsByState;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
 import org.sprouts.digitalmusic.model.parser.finance.SalesPredictionsByItemProfiles;
 import org.sprouts.digitalmusic.model.parser.items.ItemProfile;
-import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.stock.MonthlySalesPredictions;
+import org.sprouts.digitalmusic.model.parser.stock.MonthlySalesPredictionsByState;
 import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
 import io.swagger.annotations.Api;
@@ -83,10 +85,22 @@ public class DashboardController extends AbstractController {
 		return itemProfile;
 	}
 	
-	@RequestMapping(value = "/also-bought-recommender", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<AlsoBoughtRecommender> alsoBoughtRecommender() throws Exception {
-		List<AlsoBoughtRecommender> alsoBoughtRecommender = dashboardService.getAlsoBoughtRecommender();
-		return alsoBoughtRecommender;
+	@RequestMapping(value = "/sales-predictions-by-state", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<MonthlySalesPredictionsByState> monthlySalesPredictionsByStates() throws Exception {
+		List<MonthlySalesPredictionsByState> monthlySalesPredictionsByStates = dashboardService.getMonthlySalesPredictionsByStates();
+		return monthlySalesPredictionsByStates;
 	}
-
+	
+	@RequestMapping(value = "/sales-value-predictions-by-state", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<FinanceMonthlySalesPredictionsByState> financeMonthlySalesPredictionsByStates() throws Exception {
+		List<FinanceMonthlySalesPredictionsByState> financeMonthlySalesPredictionsByStates = dashboardService.getFinanceMonthlySalesPredictionsByStates();
+		return financeMonthlySalesPredictionsByStates;
+	}
+	
+	@RequestMapping(value = "/sales-value-predictions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<FinanceMonthlySalesPredictions> financeMonthlySalesPredictions() throws Exception {
+		List<FinanceMonthlySalesPredictions> financeMonthlySalesPredictions = dashboardService.getFinanceMonthlySalesPredictions();
+		return financeMonthlySalesPredictions;
+	}
+	
 }

@@ -21,11 +21,13 @@ import org.sprouts.digitalmusic.model.parser.customer.BestReviewers;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndBrand;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndItemProfile;
+import org.sprouts.digitalmusic.model.parser.finance.FinanceMonthlySalesPredictions;
+import org.sprouts.digitalmusic.model.parser.finance.FinanceMonthlySalesPredictionsByState;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
 import org.sprouts.digitalmusic.model.parser.finance.SalesPredictionsByItemProfiles;
 import org.sprouts.digitalmusic.model.parser.items.ItemProfile;
-import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.stock.MonthlySalesPredictions;
+import org.sprouts.digitalmusic.model.parser.stock.MonthlySalesPredictionsByState;
 import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
 import com.amazonaws.util.Base64;
@@ -178,19 +180,49 @@ public class DashboardService {
 		return itemProfile;
 	}
 	
-	public List<AlsoBoughtRecommender> getAlsoBoughtRecommender() {
-		List<AlsoBoughtRecommender> alsoBoughtRecommender;
+	public List<MonthlySalesPredictionsByState> getMonthlySalesPredictionsByStates() {
+		List<MonthlySalesPredictionsByState> monthlySalesPredictionsByStates;
 
 		try {
-			alsoBoughtRecommender = getObjectMapper().readValue(
-					getResults("also_bought_recommender"),
-					new TypeReference<List<AlsoBoughtRecommender>>() {
+			monthlySalesPredictionsByStates = getObjectMapper().readValue(
+					getResults("sales_predictions_by_state"),
+					new TypeReference<List<MonthlySalesPredictionsByState>>() {
 					});
 		} catch (IOException e) {
-			alsoBoughtRecommender = new ArrayList<>();
+			monthlySalesPredictionsByStates = new ArrayList<>();
 		}
 
-		return alsoBoughtRecommender;
+		return monthlySalesPredictionsByStates;
+	}
+	
+	public List<FinanceMonthlySalesPredictionsByState> getFinanceMonthlySalesPredictionsByStates() {
+		List<FinanceMonthlySalesPredictionsByState> financeMonthlySalesPredictionsByStates;
+
+		try {
+			financeMonthlySalesPredictionsByStates = getObjectMapper().readValue(
+					getResults("sales_value_predictions_by_state"),
+					new TypeReference<List<FinanceMonthlySalesPredictionsByState>>() {
+					});
+		} catch (IOException e) {
+			financeMonthlySalesPredictionsByStates = new ArrayList<>();
+		}
+
+		return financeMonthlySalesPredictionsByStates;
+	}
+	
+	public List<FinanceMonthlySalesPredictions> getFinanceMonthlySalesPredictions() {
+		List<FinanceMonthlySalesPredictions> financeMonthlySalesPredictions;
+
+		try {
+			financeMonthlySalesPredictions = getObjectMapper().readValue(
+					getResults("sales_value_predictions"),
+					new TypeReference<List<FinanceMonthlySalesPredictions>>() {
+					});
+		} catch (IOException e) {
+			financeMonthlySalesPredictions = new ArrayList<>();
+		}
+
+		return financeMonthlySalesPredictions;
 	}
 
 	/*** Returns a configured ObjectMapper instance */
