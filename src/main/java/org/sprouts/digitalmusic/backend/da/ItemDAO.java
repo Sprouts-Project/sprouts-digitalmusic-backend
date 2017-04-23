@@ -12,4 +12,7 @@ import org.sprouts.digitalmusic.model.Item;
 public interface ItemDAO extends PagingAndSortingRepository<Item, Integer> {
 
 	Page<Item> findAll(Pageable pageable);
+	
+	
+	
 }

@@ -10,5 +10,7 @@ public interface CustomerDAO extends CrudRepository<Customer, Integer> {
 
     @Query("select c from Customer c where c.userAccount.username=?1")
     Customer findByUsername(String username);
+    
+    
 
 }

@@ -1,5 +1,7 @@
 package org.sprouts.digitalmusic.backend.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,11 +10,8 @@ import org.sprouts.digitalmusic.backend.da.CustomerDAO;
 import org.sprouts.digitalmusic.backend.security.UserDetailsService;
 import org.sprouts.digitalmusic.forms.CustomerForm;
 import org.sprouts.digitalmusic.model.Customer;
-import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.ShoppingCart;
 import org.sprouts.digitalmusic.model.UserAccount;
-
-import java.util.ArrayList;
 
 @Service
 public class CustomerService {
