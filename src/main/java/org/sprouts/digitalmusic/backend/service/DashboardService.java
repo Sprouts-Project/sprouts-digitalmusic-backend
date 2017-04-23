@@ -22,10 +22,10 @@ import org.sprouts.digitalmusic.model.parser.customer.CustomerOverview;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndBrand;
 import org.sprouts.digitalmusic.model.parser.customer.CustomerSegmentationAgeAndItemProfile;
 import org.sprouts.digitalmusic.model.parser.finance.FinanceOverview;
-import org.sprouts.digitalmusic.model.parser.finance.MonthlySalesPredictions;
 import org.sprouts.digitalmusic.model.parser.finance.SalesPredictionsByItemProfiles;
 import org.sprouts.digitalmusic.model.parser.items.ItemProfile;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
+import org.sprouts.digitalmusic.model.parser.stock.MonthlySalesPredictions;
 import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
 import com.amazonaws.util.Base64;
@@ -108,7 +108,7 @@ public class DashboardService {
 
 		try {
 			monthlySalesPredictions = getObjectMapper().readValue(
-					getResults("sales_value_predictions"),
+					getResults("sales_predictions"),
 					new TypeReference<List<MonthlySalesPredictions>>() {
 					});
 		} catch (IOException e) {
