@@ -19,6 +19,8 @@ import javax.net.ssl.X509TrustManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sprouts.digitalmusic.backend.security.UserDetailsService;
+import org.sprouts.digitalmusic.model.Customer;
 import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
@@ -44,6 +46,8 @@ public class RecommenderService {
 	
 	@Autowired
 	private ItemService itemService;
+	@Autowired
+	private CustomerService customerService;
 	
 	public AlsoBoughtRecommender getAlsoBoughtRecommender(int itemId) {
 		AlsoBoughtRecommender alsoBoughtRecommender;
@@ -91,13 +95,15 @@ public class RecommenderService {
 		return mostSoldDuringLastSixMonths;
 	}
 	
-	public List<Item> getCollaborativeFilteringRecommends(int userId) {
+	public List<Item> getCollaborativeFilteringRecommends() {
 		List<CollaborativeFilteringJobServerResponse> lCollaborative = new ArrayList<>();
 		List<Item> result = new ArrayList<>();
 		
 		try {
+			Customer customer = customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
+			
 			List<Object> objects;
-			objects = getObjectMapper().readValue(getResultsJobServer("sprouts.spark.recommender.RecommendProductsCollaborativeFiltering", userId),
+			objects = getObjectMapper().readValue(getResultsJobServer("sprouts.spark.recommender.RecommendProductsCollaborativeFiltering", customer.getId()),
 					new TypeReference<List<Object>>() {
 					});
 			for(Object o:objects){

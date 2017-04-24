@@ -43,8 +43,8 @@ public class RecommenderController extends AbstractController {
 	}
 
 	@RequestMapping(value = "/collaborative-filtering-recommender", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<Item> collaborativeFilteringRecommender(@RequestParam int userId) throws Exception {
-		List<Item> result = recommenderService.getCollaborativeFilteringRecommends(userId);
+	public List<Item> collaborativeFilteringRecommender() throws Exception {
+		List<Item> result = recommenderService.getCollaborativeFilteringRecommends();
 		return result;
 	}
 	
