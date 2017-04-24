@@ -7,6 +7,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -16,9 +17,12 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
+import org.sprouts.digitalmusic.model.parser.recommender.CollaborativeFilteringJobServerResponse;
 import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMonths;
 
 import com.amazonaws.util.Base64;
@@ -34,7 +38,13 @@ public class RecommenderService {
 
 	private static String user = "admin";
 	private static String pass = "sup3r-4dm1n-pa$$-rE$t-H3ART";
-
+	
+	private static String userJobServer = "sprouts";
+	private static String passJobServer = "j0b-s3rv3r-suP3r-PA$$-SprOut$";
+	
+	@Autowired
+	private ItemService itemService;
+	
 	public AlsoBoughtRecommender getAlsoBoughtRecommender(int itemId) {
 		AlsoBoughtRecommender alsoBoughtRecommender;
 
@@ -80,6 +90,39 @@ public class RecommenderService {
 
 		return mostSoldDuringLastSixMonths;
 	}
+	
+	public List<Item> getCollaborativeFilteringRecommends(int userId) {
+		List<CollaborativeFilteringJobServerResponse> lCollaborative = new ArrayList<>();
+		List<Item> result = new ArrayList<>();
+		
+		try {
+			List<Object> objects;
+			objects = getObjectMapper().readValue(getResultsJobServer("sprouts.spark.recommender.RecommendProductsCollaborativeFiltering", userId),
+					new TypeReference<List<Object>>() {
+					});
+			for(Object o:objects){
+				List<Object> aux = getObjectMapper().readValue(o.toString(),new TypeReference<List<Object>>(){
+				});
+				
+				lCollaborative.add(new CollaborativeFilteringJobServerResponse((int) aux.get(0), (int) aux.get(1), (double) aux.get(2)));
+			}
+			
+			List<CollaborativeFilteringJobServerResponse> sublist = lCollaborative.subList(0, 12);
+			Collections.shuffle(sublist);
+			
+			for(CollaborativeFilteringJobServerResponse cf: sublist.subList(0, 6)){
+				try{
+					result.add(itemService.findOne(cf.getItemId()));
+				}catch(Exception e){
+				}
+			}
+			
+		} catch (Exception e) {
+			result = new ArrayList<>();
+		}
+		return result;
+	}
+	
 
 	/*** Returns a configured ObjectMapper instance */
 	public static ObjectMapper getObjectMapper() {
@@ -114,6 +157,37 @@ public class RecommenderService {
 		} catch (JSONException e) {
 			embeddedObj = "";
 		}
+		return embeddedObj;
+	}
+	
+	public static String getResultsJobServer(String classPath, int userId){
+		String embeddedObj;
+		try {
+			disableSSL();
+			String url = "https://jobserver.sprouts-project.com:8090/jobs?appName=sprouts-jobs&classPath="+classPath+"&sync=true&timeout=300";
+			String authStringEnc = new String(Base64.encode((userJobServer + ":" + passJobServer).getBytes()));
+
+			URL obj = new URL(url);
+
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			
+			String postStr = "input.string = "+new Integer(userId).toString();
+		    
+			con.setDoOutput(true);
+			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+			con.getOutputStream().write(postStr.getBytes("UTF-8"));
+			
+			String response = IOUtils.toString(con.getInputStream());
+			
+			JSONObject json = new JSONObject(response);
+			embeddedObj = json.get("result").toString();
+						
+		} catch (IOException e) {
+			embeddedObj = "";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			embeddedObj = "";
+		} 
 		return embeddedObj;
 	}
 

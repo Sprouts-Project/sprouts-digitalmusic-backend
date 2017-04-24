@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.sprouts.digitalmusic.backend.service.RecommenderService;
+import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
 import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMonths;
@@ -41,4 +42,10 @@ public class RecommenderController extends AbstractController {
 		return mostSoldDuringLastSixMonths;
 	}
 
+	@RequestMapping(value = "/collaborative-filtering-recommender", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<Item> collaborativeFilteringRecommender(@RequestParam int userId) throws Exception {
+		List<Item> result = recommenderService.getCollaborativeFilteringRecommends(userId);
+		return result;
+	}
+	
 }
