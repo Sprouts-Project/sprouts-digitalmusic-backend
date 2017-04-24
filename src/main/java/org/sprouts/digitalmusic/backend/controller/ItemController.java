@@ -35,13 +35,9 @@ public class ItemController extends AbstractController {
 		return result;
 	}
 
-	@RequestMapping(value = "/admin/edit", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Item edit(@RequestParam int itemId) {
-		Item item;
-
-		item = itemService.findOne(itemId);
-
-		return item;
+	@RequestMapping(value = "/display", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Item view(@RequestParam int itemId) {
+		return itemService.findOne(itemId);
 	}
 
 	@RequestMapping(value = "/admin/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,5 +48,10 @@ public class ItemController extends AbstractController {
 	@RequestMapping(value = "/admin/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseObject deleteItem(@RequestBody Item item) throws Exception {
 		return getResponseObject(itemService.delete(item));
+	}
+	
+	@RequestMapping(value = "/itemBoughtByCostumer", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public boolean itemBoughtByCostumer(@RequestParam int itemId) {
+		return itemService.itemBoughtByCostumer(itemId);
 	}
 }

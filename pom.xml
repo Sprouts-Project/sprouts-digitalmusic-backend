@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.sprouts.digitalmusic.backend</groupId>
   <artifactId>sprouts-digitalmusic-backend</artifactId>
-  <version>0.2</version>
+  <version>0.3</version>
   <repositories>
     <repository>
       <id>nexus</id>
@@ -54,13 +54,13 @@
     <dependency>
       <groupId>org.sprouts.digitalmusic.model</groupId>
       <artifactId>sprouts-digitalmusic-model</artifactId>
-      <version>0.1</version>
+      <version>0.3</version>
     </dependency>
 
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-ci</artifactId>
-      <version>6.1.0.Final</version>
+      <version>6.5.0.Final</version>
     </dependency>
 
     <dependency>
