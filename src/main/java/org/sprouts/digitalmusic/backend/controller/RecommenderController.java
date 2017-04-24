@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.sprouts.digitalmusic.backend.service.RecommenderService;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
@@ -23,8 +24,8 @@ public class RecommenderController extends AbstractController {
 	private RecommenderService recommenderService;
 	
 	@RequestMapping(value = "/also-bought-recommender", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<AlsoBoughtRecommender> alsoBoughtRecommender() throws Exception {
-		List<AlsoBoughtRecommender> alsoBoughtRecommender = recommenderService.getAlsoBoughtRecommender();
+	public AlsoBoughtRecommender alsoBoughtRecommender(@RequestParam int itemId) throws Exception {
+		AlsoBoughtRecommender alsoBoughtRecommender = recommenderService.getAlsoBoughtRecommender(itemId);
 		return alsoBoughtRecommender;
 	}
 	

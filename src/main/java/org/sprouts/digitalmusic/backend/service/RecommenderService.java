@@ -15,6 +15,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
 import org.springframework.stereotype.Service;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
@@ -34,21 +35,23 @@ public class RecommenderService {
 	private static String user = "admin";
 	private static String pass = "sup3r-4dm1n-pa$$-rE$t-H3ART";
 
-	public List<AlsoBoughtRecommender> getAlsoBoughtRecommender() {
-		List<AlsoBoughtRecommender> alsoBoughtRecommender;
+	public AlsoBoughtRecommender getAlsoBoughtRecommender(int itemId) {
+		AlsoBoughtRecommender alsoBoughtRecommender;
 
 		try {
-			alsoBoughtRecommender = getObjectMapper().readValue(
-					getResults("also_bought_recommender"),
+			List<AlsoBoughtRecommender> listAlsoBought;
+			listAlsoBought = getObjectMapper().readValue(
+					getResults("also_bought_recommender?filter={item_id:" + itemId + "}"),
 					new TypeReference<List<AlsoBoughtRecommender>>() {
 					});
-		} catch (IOException e) {
-			alsoBoughtRecommender = new ArrayList<>();
+			alsoBoughtRecommender = listAlsoBought.get(0);
+		} catch (Exception e) {
+			alsoBoughtRecommender = new AlsoBoughtRecommender();
 		}
 
 		return alsoBoughtRecommender;
 	}
-	
+
 	public List<BestReviewedDuringLastSixMonths> getBestReviewedDuringLastSixMonths() {
 		List<BestReviewedDuringLastSixMonths> bestReviewedDuringLastSixMonths;
 
@@ -63,13 +66,12 @@ public class RecommenderService {
 
 		return bestReviewedDuringLastSixMonths;
 	}
-	
+
 	public List<MostSoldDuringLastSixMonths> getMostSoldDuringLastSixMonths() {
 		List<MostSoldDuringLastSixMonths> mostSoldDuringLastSixMonths;
 
 		try {
-			mostSoldDuringLastSixMonths = getObjectMapper().readValue(
-					getResults("most_sold_during_last_six_months"),
+			mostSoldDuringLastSixMonths = getObjectMapper().readValue(getResults("most_sold_during_last_six_months"),
 					new TypeReference<List<MostSoldDuringLastSixMonths>>() {
 					});
 		} catch (IOException e) {
