@@ -1,6 +1,7 @@
 package org.sprouts.digitalmusic.backend.service;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,20 +30,14 @@ public class ReviewService {
 		review.setCustomer(customerService.findByUsername(UserDetailsService.getPrincipal().getUsername()));
 		review.setItem(itemService.findOne(itemId));
 		review.setHelpful(0);
-		review.setOverall(0);
 		review.setUnhelpful(0);
+		review.setDate(new Date());
 		reviewDAO.save(review);
-		return 1;
-	}
 
-	public int delete(Review review){
-		reviewDAO.delete(review);
 		return 1;
 	}
-	
 
 	public Collection<Review> findReviewsOfItem(Item item) {
-		
 		return reviewDAO.findReviewsOfItem(item);
 	}
 }

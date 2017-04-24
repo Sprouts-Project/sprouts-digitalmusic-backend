@@ -17,7 +17,6 @@ public interface ItemDAO extends PagingAndSortingRepository<Item, Integer> {
 
 	Page<Item> findAll(Pageable pageable);
 	
-	@Query("Select o.item from OrderedItem o where o.order.customer=?1")
+	@Query("select o.item from OrderedItem o where o.order.customer=?1")
 	Collection<Item> itemBoughtByCostumer(Customer customer);
-	
 }

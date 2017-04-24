@@ -34,7 +34,8 @@ public class ResourceServer {
                     .antMatchers("/order/admin/*").hasAuthority("ADMIN")
                     .antMatchers("/customer/*").hasAuthority("USER")
                     .antMatchers("/order/*").hasAuthority("USER")
-                    .antMatchers("/item/*").permitAll();
+                    .antMatchers("/item/").permitAll()
+                    .antMatchers("/item/admin").hasAuthority("ADMIN");
         }
     }
 }

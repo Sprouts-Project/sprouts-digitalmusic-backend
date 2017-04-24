@@ -27,29 +27,15 @@ public class ReviewController extends AbstractController {
 	
 	@Autowired
 	private ItemService itemService;
-	
-	
 
 	@RequestMapping(value = "/findByItem", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Collection<Review> findByItem(@RequestParam int itemId) throws Exception {
-		
 		Item item = itemService.findOne(itemId);
 		return reviewService.findReviewsOfItem(item);
-		
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseObject createReview(@RequestBody Review review,@RequestParam int itemId) throws Exception {
-		
 		return getResponseObject(reviewService.save(review, itemId));
 	}
-
-	@RequestMapping(value = "/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseObject deleteReview(@RequestBody Review review) throws Exception {
-		return getResponseObject(reviewService.delete(review));
-	}
-
-
-
-
 }

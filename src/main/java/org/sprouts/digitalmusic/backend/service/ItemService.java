@@ -22,17 +22,18 @@ public class ItemService {
 	@Autowired
     private CustomerService customerService;
 	
-	
 	@Autowired
 	private ItemDAO itemDAO;
 
 	public int save(Item item){
 		itemDAO.save(item);
+
 		return 1;
 	}
 
 	public int delete(Item item){
 		itemDAO.delete(item);
+
 		return 1;
 	}
 
@@ -52,8 +53,7 @@ public class ItemService {
 		Customer customer = customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
 		Item item = findOne(itemId);
 		Collection<Item> items = itemDAO.itemBoughtByCostumer(customer);
+
 		return items.contains(item);
-		
-		
 	}
 }
