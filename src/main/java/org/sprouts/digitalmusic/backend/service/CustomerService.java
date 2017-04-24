@@ -77,4 +77,11 @@ public class CustomerService {
         return 1;
     }
 
+    public Integer numberOfNegativeReviews(){
+        Customer principal = findByUsername(UserDetailsService.getPrincipal().getUsername());
+        Integer res;
+        res = customerDAO.numberOfNegativeReviews(principal);
+        return res;
+    }
+
 }
