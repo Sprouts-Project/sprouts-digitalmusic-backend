@@ -36,7 +36,6 @@
   </parent>
   <properties>
     <java.version>1.8</java.version>
-    <start-class>org.sprouts.backend.BackEndServer</start-class>
   </properties>
   <dependencies>
     <dependency>
