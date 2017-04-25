@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -23,6 +21,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sprouts.digitalmusic.backend.security.UserDetailsService;
 import org.sprouts.digitalmusic.model.Customer;
 import org.sprouts.digitalmusic.model.Review;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
@@ -49,8 +48,6 @@ public class RecommenderService {
 	private static String userJobServer = "sprouts";
 	private static String passJobServer = "j0b-s3rv3r-suP3r-PA$$-SprOut$";
 
-	@Autowired
-	private ItemService itemService;
 	@Autowired
 	private CustomerService customerService;
 	@Autowired
@@ -107,8 +104,7 @@ public class RecommenderService {
 		List<ItemRecommendation> result = new ArrayList<>();
 
 		Customer customer =
-		//customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
-		customerService.findByUsername("wesleyhurley27");
+		customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
 				
 		// first, check if this user has reviews
 		Collection<Review> reviews = reviewService.findReviewsOfCustomer(customer);
