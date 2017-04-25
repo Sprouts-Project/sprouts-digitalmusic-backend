@@ -25,6 +25,7 @@ import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
 import org.sprouts.digitalmusic.model.parser.recommender.CollaborativeFilteringJobServerResponse;
+import org.sprouts.digitalmusic.model.parser.recommender.ItemProfileRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMonths;
 
 import com.amazonaws.util.Base64;
@@ -129,7 +130,26 @@ public class RecommenderService {
 		return result;
 	}
 	
+	public ItemProfileRecommender getItemProfileRecommeender(int itemId) {
+		ItemProfileRecommender itemProfileRecommender;
 
+		try {
+			List<ItemProfileRecommender> listItemProfileRec;
+			listItemProfileRec = getObjectMapper().readValue(
+					getResults("item_profile_recommender?filter={item_id:" + itemId + "}"),
+					new TypeReference<List<ItemProfileRecommender>>() {
+					});
+			itemProfileRecommender = listItemProfileRec.get(0);
+			Collections.shuffle(itemProfileRecommender.getItems());
+			itemProfileRecommender.setItems(itemProfileRecommender.getItems().subList(0, 6));
+		} catch (Exception e) {
+			itemProfileRecommender = new ItemProfileRecommender();
+		}
+
+		return itemProfileRecommender;
+	}
+	
+	
 	/*** Returns a configured ObjectMapper instance */
 	public static ObjectMapper getObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();

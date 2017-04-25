@@ -12,6 +12,7 @@ import org.sprouts.digitalmusic.backend.service.RecommenderService;
 import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
+import org.sprouts.digitalmusic.model.parser.recommender.ItemProfileRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMonths;
 
 import io.swagger.annotations.Api;
@@ -46,6 +47,12 @@ public class RecommenderController extends AbstractController {
 	public List<Item> collaborativeFilteringRecommender() throws Exception {
 		List<Item> result = recommenderService.getCollaborativeFilteringRecommends();
 		return result;
+	}
+	
+	@RequestMapping(value = "/item-profile-recommender", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ItemProfileRecommender itemProfileRecommender(@RequestParam int itemId) throws Exception {
+		ItemProfileRecommender itemProfileRecommender = recommenderService.getItemProfileRecommeender(itemId);
+		return itemProfileRecommender;
 	}
 	
 }
