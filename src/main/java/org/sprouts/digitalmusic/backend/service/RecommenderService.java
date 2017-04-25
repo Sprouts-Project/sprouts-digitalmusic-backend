@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -18,16 +20,16 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.sprouts.digitalmusic.backend.security.UserDetailsService;
 import org.sprouts.digitalmusic.model.Customer;
-import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.Review;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
-import org.sprouts.digitalmusic.model.parser.recommender.CollaborativeFilteringJobServerResponse;
+import org.sprouts.digitalmusic.model.parser.recommender.CollaborativeFilteringRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.ItemProfileRecommender;
+import org.sprouts.digitalmusic.model.parser.recommender.ItemRecommendation;
 import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMonths;
 
 import com.amazonaws.util.Base64;
@@ -100,13 +102,14 @@ public class RecommenderService {
 		return mostSoldDuringLastSixMonths;
 	}
 
-	public List<Item> getCollaborativeFilteringRecommends() {
-		List<CollaborativeFilteringJobServerResponse> lCollaborative = new ArrayList<>();
-		List<Item> result = new ArrayList<>();
+	public List<ItemRecommendation> getCollaborativeFilteringRecommends() {
+		List<CollaborativeFilteringRecommender> lCollaborative = new ArrayList<>();
+		List<ItemRecommendation> result = new ArrayList<>();
 
 		Customer customer =
-		customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
-		
+		//customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
+		customerService.findByUsername("wesleyhurley27");
+				
 		// first, check if this user has reviews
 		Collection<Review> reviews = reviewService.findReviewsOfCustomer(customer);
 		
@@ -115,45 +118,29 @@ public class RecommenderService {
 			// query the warehouse to search the recommendations for this user
 			try {
 				lCollaborative = getObjectMapper().readValue(
-						getResults("collaborative_filtering_recommendations?filter={user:" + customer.getId() + "}"),
-						new TypeReference<List<CollaborativeFilteringJobServerResponse>>() {
+						getResults("collaborative_filtering_recommendations?filter={customer_id:" + customer.getId() + "}"),
+						new TypeReference<List<CollaborativeFilteringRecommender>>() {
 						});
 			} catch (IOException e) {
-				e.printStackTrace();
 				lCollaborative = new ArrayList<>();
 			}
 
 			// if there are not recommendations in the warehouse, call the jobserver
 			if (lCollaborative.isEmpty()) {
 				try {
-
-					List<Object> objects;
-					objects = getObjectMapper().readValue(
+					lCollaborative = getObjectMapper().readValue(
 							getResultsJobServer("sprouts.spark.recommender.RecommendProductsCollaborativeFiltering", customer.getId()),
-							new TypeReference<List<Object>>() {
+							new TypeReference<List<CollaborativeFilteringRecommender>>() {
 							});
-					for (Object o : objects) {
-						List<Object> aux = getObjectMapper().readValue(o.toString(), new TypeReference<List<Object>>() {
-						});
-
-						lCollaborative.add(new CollaborativeFilteringJobServerResponse((int) aux.get(0), (int) aux.get(1),
-								(double) aux.get(2)));
-					}
 				} catch (Exception e) {
 					result = new ArrayList<>();
 				}
 			}
 			
 			if(!lCollaborative.isEmpty()){
-				List<CollaborativeFilteringJobServerResponse> sublist = lCollaborative.subList(0, 12);
-				Collections.shuffle(sublist);
-
-				for (CollaborativeFilteringJobServerResponse cf : sublist.subList(0, 6)) {
-					try {
-						result.add(itemService.findOne(cf.getProduct()));
-					} catch (Exception e) {
-					}
-				}
+				CollaborativeFilteringRecommender rec = lCollaborative.get(0);
+				Collections.shuffle(rec.getItems());
+				result = rec.getItems().subList(0, 6);
 			}
 		}
 
@@ -203,10 +190,9 @@ public class RecommenderService {
 			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
 
 			String response = IOUtils.toString(con.getInputStream());
-
+			
 			JSONObject json = new JSONObject(response);
 			embeddedObj = json.get("_embedded").toString();
-
 		} catch (IOException e) {
 			embeddedObj = "";
 		} catch (JSONException e) {
@@ -234,13 +220,24 @@ public class RecommenderService {
 			con.getOutputStream().write(postStr.getBytes("UTF-8"));
 
 			String response = IOUtils.toString(con.getInputStream());
-
+			
+			// unescape json string
+			response = StringEscapeUtils.UNESCAPE_JSON.translate(response);
+			
+			// remove first and last double quotes
+			response = response.replaceFirst("\"\\{", "{");
+			
+			int ind = response.lastIndexOf('"');
+			if( ind>=0 )
+			    response = new StringBuilder(response).replace(ind, ind+1,"").toString();
+			
+			// parse json
 			JSONObject json = new JSONObject(response);
 			embeddedObj = json.get("result").toString();
+			
 		} catch (IOException e) {
 			embeddedObj = "";
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			embeddedObj = "";
 		}
 		return embeddedObj;
