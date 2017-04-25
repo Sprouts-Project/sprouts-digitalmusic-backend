@@ -56,4 +56,10 @@ public class ItemService {
 
 		return items.contains(item);
 	}
+
+	public int getNumberOfSales(int itemId){
+		Item item = findOne(itemId);
+
+		return itemDAO.numberOfSales(item);
+	}
 }

@@ -2,9 +2,10 @@ package org.sprouts.backend.rules;
 
 import org.sprouts.digitalmusic.model.*;
 import org.sprouts.digitalmusic.backend.service.OrderService;
+import org.sprouts.digitalmusic.backend.service.CustomerService;
 
 global OrderService orderService;
-
+global CustomerService customerService;
 
 rule "10% discount for 5 products"
     when
@@ -14,4 +15,16 @@ rule "10% discount for 5 products"
         if(num >= 5){
             order.setTotalPrice((double)Math.round(order.getTotalPrice()*0.9 * 100d) / 100d);
         }
+end
+
+rule "Customers with 10 negative reviews can not write more reviews"
+    when
+    	review: Review()
+    then
+        int num = customerService.numberOfNegativeReviews();
+        if(num >= 10){
+            throw new IllegalArgumentException("This client can not write more reviews because it is sanctioned");
+        }
+
+
 end
