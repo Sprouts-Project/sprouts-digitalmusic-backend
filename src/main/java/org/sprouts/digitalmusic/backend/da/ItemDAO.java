@@ -19,4 +19,7 @@ public interface ItemDAO extends PagingAndSortingRepository<Item, Integer> {
 	
 	@Query("select o.item from OrderedItem o where o.order.customer=?1")
 	Collection<Item> itemBoughtByCostumer(Customer customer);
+
+	@Query("select count(o.item) from OrderedItem o where o.item = ?1")
+	Integer numberOfSales(Item item);
 }

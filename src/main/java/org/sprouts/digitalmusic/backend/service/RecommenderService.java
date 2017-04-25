@@ -7,6 +7,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -16,9 +18,17 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sprouts.digitalmusic.backend.security.UserDetailsService;
+import org.sprouts.digitalmusic.model.Customer;
+import org.sprouts.digitalmusic.model.Review;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
+import org.sprouts.digitalmusic.model.parser.recommender.CollaborativeFilteringRecommender;
+import org.sprouts.digitalmusic.model.parser.recommender.ItemProfileRecommender;
+import org.sprouts.digitalmusic.model.parser.recommender.ItemRecommendation;
 import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMonths;
 
 import com.amazonaws.util.Base64;
@@ -35,6 +45,14 @@ public class RecommenderService {
 	private static String user = "admin";
 	private static String pass = "sup3r-4dm1n-pa$$-rE$t-H3ART";
 
+	private static String userJobServer = "sprouts";
+	private static String passJobServer = "j0b-s3rv3r-suP3r-PA$$-SprOut$";
+
+	@Autowired
+	private CustomerService customerService;
+	@Autowired
+	private ReviewService reviewService;
+	
 	public AlsoBoughtRecommender getAlsoBoughtRecommender(int itemId) {
 		AlsoBoughtRecommender alsoBoughtRecommender;
 
@@ -81,6 +99,69 @@ public class RecommenderService {
 		return mostSoldDuringLastSixMonths;
 	}
 
+	public List<ItemRecommendation> getCollaborativeFilteringRecommends() {
+		List<CollaborativeFilteringRecommender> lCollaborative = new ArrayList<>();
+		List<ItemRecommendation> result = new ArrayList<>();
+
+		Customer customer =
+		customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
+				
+		// first, check if this user has reviews
+		Collection<Review> reviews = reviewService.findReviewsOfCustomer(customer);
+		
+		// if this user has reviews, search in the collaborative filtering
+		if(!reviews.isEmpty()){
+			// query the warehouse to search the recommendations for this user
+			try {
+				lCollaborative = getObjectMapper().readValue(
+						getResults("collaborative_filtering_recommendations?filter={customer_id:" + customer.getId() + "}"),
+						new TypeReference<List<CollaborativeFilteringRecommender>>() {
+						});
+			} catch (IOException e) {
+				lCollaborative = new ArrayList<>();
+			}
+
+			// if there are not recommendations in the warehouse, call the jobserver
+			if (lCollaborative.isEmpty()) {
+				try {
+					lCollaborative = getObjectMapper().readValue(
+							getResultsJobServer("sprouts.spark.recommender.RecommendProductsCollaborativeFiltering", customer.getId()),
+							new TypeReference<List<CollaborativeFilteringRecommender>>() {
+							});
+				} catch (Exception e) {
+					result = new ArrayList<>();
+				}
+			}
+			
+			if(!lCollaborative.isEmpty()){
+				CollaborativeFilteringRecommender rec = lCollaborative.get(0);
+				Collections.shuffle(rec.getItems());
+				result = rec.getItems().subList(0, 6);
+			}
+		}
+
+		return result;
+	}
+
+	public ItemProfileRecommender getItemProfileRecommeender(int itemId) {
+		ItemProfileRecommender itemProfileRecommender;
+
+		try {
+			List<ItemProfileRecommender> listItemProfileRec;
+			listItemProfileRec = getObjectMapper().readValue(
+					getResults("item_profile_recommender?filter={item_id:" + itemId + "}"),
+					new TypeReference<List<ItemProfileRecommender>>() {
+					});
+			itemProfileRecommender = listItemProfileRec.get(0);
+			Collections.shuffle(itemProfileRecommender.getItems());
+			itemProfileRecommender.setItems(itemProfileRecommender.getItems().subList(0, 6));
+		} catch (Exception e) {
+			itemProfileRecommender = new ItemProfileRecommender();
+		}
+
+		return itemProfileRecommender;
+	}
+
 	/*** Returns a configured ObjectMapper instance */
 	public static ObjectMapper getObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -105,10 +186,51 @@ public class RecommenderService {
 			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
 
 			String response = IOUtils.toString(con.getInputStream());
-
+			
 			JSONObject json = new JSONObject(response);
 			embeddedObj = json.get("_embedded").toString();
+		} catch (IOException e) {
+			embeddedObj = "";
+		} catch (JSONException e) {
+			embeddedObj = "";
+		}
+		return embeddedObj;
+	}
 
+	public static String getResultsJobServer(String classPath, int userId) {
+		String embeddedObj;
+		try {
+			disableSSL();
+			String url = "https://jobserver.sprouts-project.com:8090/jobs?appName=sprouts-jobs&classPath=" + classPath
+					+ "&sync=true&timeout=300";
+			String authStringEnc = new String(Base64.encode((userJobServer + ":" + passJobServer).getBytes()));
+
+			URL obj = new URL(url);
+
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			String postStr = "input.string = " + new Integer(userId).toString();
+
+			con.setDoOutput(true);
+			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+			con.getOutputStream().write(postStr.getBytes("UTF-8"));
+
+			String response = IOUtils.toString(con.getInputStream());
+			
+			// unescape json string
+			response = StringEscapeUtils.UNESCAPE_JSON.translate(response);
+			
+			// remove first and last double quotes
+			response = response.replaceFirst("\"\\{", "{");
+			
+			int ind = response.lastIndexOf('"');
+			if( ind>=0 )
+			    response = new StringBuilder(response).replace(ind, ind+1,"").toString();
+			
+			// parse json
+			JSONObject json = new JSONObject(response);
+			embeddedObj = json.get("result").toString();
+			
 		} catch (IOException e) {
 			embeddedObj = "";
 		} catch (JSONException e) {

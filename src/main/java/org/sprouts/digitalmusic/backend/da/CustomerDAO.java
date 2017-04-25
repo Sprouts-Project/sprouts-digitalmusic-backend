@@ -10,7 +10,7 @@ public interface CustomerDAO extends CrudRepository<Customer, Integer> {
 
     @Query("select c from Customer c where c.userAccount.username=?1")
     Customer findByUsername(String username);
-    
-    
 
+    @Query("select sum(r.unhelpful) from Review r where r.customer = ?1")
+    Integer numberOfNegativeReviews(Customer principal);
 }

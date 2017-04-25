@@ -32,6 +32,7 @@ public class ResourceServer {
                     .authorizeRequests()
                     .antMatchers("/admin/*").hasAuthority("ADMIN")
                     .antMatchers("/order/admin/*").hasAuthority("ADMIN")
+                    .antMatchers("/customer/create").anonymous()
                     .antMatchers("/customer/*").hasAuthority("USER")
                     .antMatchers("/order/*").hasAuthority("USER")
                     .antMatchers("/item/").permitAll()
