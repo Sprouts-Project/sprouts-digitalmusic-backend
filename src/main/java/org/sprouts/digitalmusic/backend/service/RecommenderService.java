@@ -7,6 +7,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.sprouts.digitalmusic.backend.security.UserDetailsService;
 import org.sprouts.digitalmusic.model.Customer;
 import org.sprouts.digitalmusic.model.Item;
+import org.sprouts.digitalmusic.model.Review;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
 import org.sprouts.digitalmusic.model.parser.recommender.CollaborativeFilteringJobServerResponse;
@@ -41,14 +43,16 @@ public class RecommenderService {
 
 	private static String user = "admin";
 	private static String pass = "sup3r-4dm1n-pa$$-rE$t-H3ART";
-	
+
 	private static String userJobServer = "sprouts";
 	private static String passJobServer = "j0b-s3rv3r-suP3r-PA$$-SprOut$";
-	
+
 	@Autowired
 	private ItemService itemService;
 	@Autowired
 	private CustomerService customerService;
+	@Autowired
+	private ReviewService reviewService;
 	
 	public AlsoBoughtRecommender getAlsoBoughtRecommender(int itemId) {
 		AlsoBoughtRecommender alsoBoughtRecommender;
@@ -95,41 +99,67 @@ public class RecommenderService {
 
 		return mostSoldDuringLastSixMonths;
 	}
-	
+
 	public List<Item> getCollaborativeFilteringRecommends() {
 		List<CollaborativeFilteringJobServerResponse> lCollaborative = new ArrayList<>();
 		List<Item> result = new ArrayList<>();
+
+		Customer customer =
+		customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
 		
-		try {
-			Customer customer = customerService.findByUsername(UserDetailsService.getPrincipal().getUsername());
-			
-			List<Object> objects;
-			objects = getObjectMapper().readValue(getResultsJobServer("sprouts.spark.recommender.RecommendProductsCollaborativeFiltering", customer.getId()),
-					new TypeReference<List<Object>>() {
-					});
-			for(Object o:objects){
-				List<Object> aux = getObjectMapper().readValue(o.toString(),new TypeReference<List<Object>>(){
-				});
-				
-				lCollaborative.add(new CollaborativeFilteringJobServerResponse((int) aux.get(0), (int) aux.get(1), (double) aux.get(2)));
+		// first, check if this user has reviews
+		Collection<Review> reviews = reviewService.findReviewsOfCustomer(customer);
+		
+		// if this user has reviews, search in the collaborative filtering
+		if(!reviews.isEmpty()){
+			// query the warehouse to search the recommendations for this user
+			try {
+				lCollaborative = getObjectMapper().readValue(
+						getResults("collaborative_filtering_recommendations?filter={user:" + customer.getId() + "}"),
+						new TypeReference<List<CollaborativeFilteringJobServerResponse>>() {
+						});
+			} catch (IOException e) {
+				e.printStackTrace();
+				lCollaborative = new ArrayList<>();
 			}
-			
-			List<CollaborativeFilteringJobServerResponse> sublist = lCollaborative.subList(0, 12);
-			Collections.shuffle(sublist);
-			
-			for(CollaborativeFilteringJobServerResponse cf: sublist.subList(0, 6)){
-				try{
-					result.add(itemService.findOne(cf.getItemId()));
-				}catch(Exception e){
+
+			// if there are not recommendations in the warehouse, call the jobserver
+			if (lCollaborative.isEmpty()) {
+				try {
+
+					List<Object> objects;
+					objects = getObjectMapper().readValue(
+							getResultsJobServer("sprouts.spark.recommender.RecommendProductsCollaborativeFiltering", customer.getId()),
+							new TypeReference<List<Object>>() {
+							});
+					for (Object o : objects) {
+						List<Object> aux = getObjectMapper().readValue(o.toString(), new TypeReference<List<Object>>() {
+						});
+
+						lCollaborative.add(new CollaborativeFilteringJobServerResponse((int) aux.get(0), (int) aux.get(1),
+								(double) aux.get(2)));
+					}
+				} catch (Exception e) {
+					result = new ArrayList<>();
 				}
 			}
 			
-		} catch (Exception e) {
-			result = new ArrayList<>();
+			if(!lCollaborative.isEmpty()){
+				List<CollaborativeFilteringJobServerResponse> sublist = lCollaborative.subList(0, 12);
+				Collections.shuffle(sublist);
+
+				for (CollaborativeFilteringJobServerResponse cf : sublist.subList(0, 6)) {
+					try {
+						result.add(itemService.findOne(cf.getProduct()));
+					} catch (Exception e) {
+					}
+				}
+			}
 		}
+
 		return result;
 	}
-	
+
 	public ItemProfileRecommender getItemProfileRecommeender(int itemId) {
 		ItemProfileRecommender itemProfileRecommender;
 
@@ -148,8 +178,7 @@ public class RecommenderService {
 
 		return itemProfileRecommender;
 	}
-	
-	
+
 	/*** Returns a configured ObjectMapper instance */
 	public static ObjectMapper getObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -185,35 +214,35 @@ public class RecommenderService {
 		}
 		return embeddedObj;
 	}
-	
-	public static String getResultsJobServer(String classPath, int userId){
+
+	public static String getResultsJobServer(String classPath, int userId) {
 		String embeddedObj;
 		try {
 			disableSSL();
-			String url = "https://jobserver.sprouts-project.com:8090/jobs?appName=sprouts-jobs&classPath="+classPath+"&sync=true&timeout=300";
+			String url = "https://jobserver.sprouts-project.com:8090/jobs?appName=sprouts-jobs&classPath=" + classPath
+					+ "&sync=true&timeout=300";
 			String authStringEnc = new String(Base64.encode((userJobServer + ":" + passJobServer).getBytes()));
 
 			URL obj = new URL(url);
 
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			
-			String postStr = "input.string = "+new Integer(userId).toString();
-		    
+
+			String postStr = "input.string = " + new Integer(userId).toString();
+
 			con.setDoOutput(true);
 			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
 			con.getOutputStream().write(postStr.getBytes("UTF-8"));
-			
+
 			String response = IOUtils.toString(con.getInputStream());
-			
+
 			JSONObject json = new JSONObject(response);
 			embeddedObj = json.get("result").toString();
-						
 		} catch (IOException e) {
 			embeddedObj = "";
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			embeddedObj = "";
-		} 
+		}
 		return embeddedObj;
 	}
 

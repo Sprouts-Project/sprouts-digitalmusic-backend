@@ -58,5 +58,9 @@ public class ReviewService {
     public Collection<Review> findReviewsOfItem(Item item) {
         return reviewDAO.findReviewsOfItem(item);
     }
+    
+    public Collection<Review> findReviewsOfCustomer(Customer customer) {
+        return reviewDAO.findReviewsOfCustomer(customer);
+    }
 
 }
