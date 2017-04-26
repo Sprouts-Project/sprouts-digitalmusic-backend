@@ -3,9 +3,9 @@ spring:
   application:
      name: backend-service
   datasource:
-    url: jdbc:mysql://139.59.175.35:3306/digital-music-develop
-    username: manager
-    password: root
+    url: jdbc:mysql://139.59.175.35:3306/digital-music
+    username: sprouts
+    password: Spr0ut$-my$ql-p@$$-8
     driver-class-authority: com.mysql.jdbc.Driver
   jpa:
     hibernate:
