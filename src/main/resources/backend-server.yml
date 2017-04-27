@@ -7,6 +7,8 @@ spring:
     username: sprouts
     password: Spr0ut$-my$ql-p@$$-8
     driver-class-authority: com.mysql.jdbc.Driver
+    test-on-borrow: true
+    validation-query: SELECT 1
   jpa:
     hibernate:
       ddl-auto: validate
