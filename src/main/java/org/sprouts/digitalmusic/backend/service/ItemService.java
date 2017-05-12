@@ -44,7 +44,7 @@ public class ItemService {
 	public Page<Item> findAll(int pageNumber) {
 		Assert.isTrue(pageNumber >= 0);
 
-		Pageable pageable = new PageRequest(pageNumber, 12);
+		Pageable pageable = new PageRequest(pageNumber, 9);
 
 		return itemDAO.findAll(pageable);
 	}

@@ -30,7 +30,7 @@ public class ItemController extends AbstractController {
 		Page<Item> page = itemService.findAll(pageNumber);
 
 		result[0] = page.getContent();
-		result[1] = new PaginationInfo(pageNumber, page.getTotalPages(), page.getNumberOfElements(), 12);
+		result[1] = new PaginationInfo(pageNumber, page.getTotalPages(), page.getNumberOfElements(), 9);
 
 		return result;
 	}
