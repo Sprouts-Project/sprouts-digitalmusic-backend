@@ -13,6 +13,8 @@ import org.sprouts.digitalmusic.model.Customer;
 import org.sprouts.digitalmusic.model.ShoppingCart;
 import org.sprouts.digitalmusic.model.UserAccount;
 
+import javax.transaction.Transactional;
+
 @Service
 public class CustomerService {
 
@@ -31,6 +33,7 @@ public class CustomerService {
 
     // Simple CRUD Methods ----------------------------------------------------
 
+    @Transactional
     public int save(Customer customer) {
         UserAccount userAccount = customer.getUserAccount();
         UserAccount userAccountDB = userAccountService.save(userAccount);
