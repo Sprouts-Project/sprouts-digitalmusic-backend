@@ -10,7 +10,6 @@ import org.sprouts.digitalmusic.model.Customer;
 import org.sprouts.digitalmusic.pojo.ResponseObject;
 
 @RestController
-@Api
 @RequestMapping("/customer")
 public class CustomerController extends AbstractController {
 

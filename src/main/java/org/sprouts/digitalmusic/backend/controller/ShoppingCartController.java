@@ -14,7 +14,6 @@ import org.sprouts.digitalmusic.model.Item;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api
 @RequestMapping("/shoppingCart")
 public class ShoppingCartController extends AbstractController {
 

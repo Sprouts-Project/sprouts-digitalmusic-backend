@@ -13,7 +13,6 @@ import org.sprouts.digitalmusic.model.Category;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api
 @RequestMapping("/category")
 public class CategoryController extends AbstractController {
 

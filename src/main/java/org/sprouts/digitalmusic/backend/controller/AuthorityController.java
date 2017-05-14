@@ -11,7 +11,6 @@ import org.sprouts.digitalmusic.model.Authority;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api
 @RequestMapping("/authority")
 public class AuthorityController extends AbstractController {
 

@@ -24,7 +24,6 @@ import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api
 @RequestMapping("/dashboard")
 public class DashboardController extends AbstractController {
 

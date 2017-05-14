@@ -19,7 +19,6 @@ import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMo
 import io.swagger.annotations.Api;
 
 @RestController
-@Api
 @RequestMapping("/recommender")
 public class RecommenderController extends AbstractController {
 
