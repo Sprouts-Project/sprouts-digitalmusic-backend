@@ -82,7 +82,8 @@ public class OrderService {
 
     public Integer markAsDelivered(int orderId) {
         Order order = orderDAO.findOne(orderId);
-        order.setDeliveredDate(new Date());
+        Date now = new Date(System.currentTimeMillis() - 1000);
+        order.setDeliveredDate(now);
         orderDAO.save(order);
         return 1;
     }
