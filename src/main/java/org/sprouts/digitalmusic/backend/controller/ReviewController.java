@@ -15,10 +15,7 @@ import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.Review;
 import org.sprouts.digitalmusic.pojo.ResponseObject;
 
-import io.swagger.annotations.Api;
-
 @RestController
-@Api
 @RequestMapping("/review")
 public class ReviewController extends AbstractController {
 

@@ -9,14 +9,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.sprouts.digitalmusic.backend.service.RecommenderService;
-import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.model.parser.recommender.AlsoBoughtRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.BestReviewedDuringLastSixMonths;
 import org.sprouts.digitalmusic.model.parser.recommender.ItemProfileRecommender;
 import org.sprouts.digitalmusic.model.parser.recommender.ItemRecommendation;
 import org.sprouts.digitalmusic.model.parser.recommender.MostSoldDuringLastSixMonths;
-
-import io.swagger.annotations.Api;
 
 @RestController
 @RequestMapping("/recommender")

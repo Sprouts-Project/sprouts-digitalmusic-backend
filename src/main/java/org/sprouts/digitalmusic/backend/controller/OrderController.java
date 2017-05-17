@@ -13,8 +13,6 @@ import org.sprouts.digitalmusic.model.Order;
 import org.sprouts.digitalmusic.pojo.PaginationInfo;
 import org.sprouts.digitalmusic.pojo.ResponseObject;
 
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping("/order")
 public class OrderController extends AbstractController {

@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.sprouts.digitalmusic.backend.service.AuthorityService;
 import org.sprouts.digitalmusic.model.Authority;
 
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping("/authority")
 public class AuthorityController extends AbstractController {

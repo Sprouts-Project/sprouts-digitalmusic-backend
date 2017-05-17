@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.sprouts.digitalmusic.backend.service.CategoryService;
 import org.sprouts.digitalmusic.model.Category;
 
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping("/category")
 public class CategoryController extends AbstractController {

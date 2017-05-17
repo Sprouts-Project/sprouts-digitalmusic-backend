@@ -21,8 +21,6 @@ import org.sprouts.digitalmusic.model.parser.stock.MonthlySalesPredictions;
 import org.sprouts.digitalmusic.model.parser.stock.MonthlySalesPredictionsByState;
 import org.sprouts.digitalmusic.model.parser.stock.StockOverview;
 
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping("/dashboard")
 public class DashboardController extends AbstractController {
