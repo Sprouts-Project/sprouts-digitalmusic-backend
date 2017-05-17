@@ -10,10 +10,14 @@ import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 
+import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import static com.google.common.base.Predicates.not;
+import static springfox.documentation.builders.RequestHandlerSelectors.withClassAnnotation;
 
 @SpringBootApplication
 @EnableSwagger2
@@ -31,10 +35,11 @@ public class BackEndServer implements ApplicationRunner {
 	
 	@Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)          
-          .select()
-          .apis(RequestHandlerSelectors.basePackage("org.sprouts.digitalmusic.backend.controller"))
-          .build();
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.sprouts.digitalmusic.backend.controller"))
+                .paths(PathSelectors.ant("/item/*"))
+                .build();
     }
 	
 	@Bean

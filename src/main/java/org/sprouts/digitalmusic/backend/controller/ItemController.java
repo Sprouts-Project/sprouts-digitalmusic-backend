@@ -1,5 +1,6 @@
 package org.sprouts.digitalmusic.backend.controller;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -12,8 +13,6 @@ import org.sprouts.digitalmusic.backend.service.ItemService;
 import org.sprouts.digitalmusic.model.Item;
 import org.sprouts.digitalmusic.pojo.PaginationInfo;
 import org.sprouts.digitalmusic.pojo.ResponseObject;
-
-import io.swagger.annotations.Api;
 
 @RestController
 @Api

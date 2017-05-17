@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.sprouts.digitalmusic.backend.service.ShoppingCartService;
 import org.sprouts.digitalmusic.model.Item;
 
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping("/shoppingCart")
 public class ShoppingCartController extends AbstractController {
