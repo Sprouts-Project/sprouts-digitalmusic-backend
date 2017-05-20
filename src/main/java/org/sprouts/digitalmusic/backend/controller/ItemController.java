@@ -55,7 +55,7 @@ public class ItemController extends AbstractController {
 	}
 	
 	@RequestMapping(value = "/itemBoughtByCostumer", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public boolean itemBoughtByCostumer(@RequestParam int itemId) {
+	public boolean itemBoughtByCostumer(@RequestParam int itemId) throws Exception {
 		return itemService.itemBoughtByCostumer(itemId);
 	}
 }
