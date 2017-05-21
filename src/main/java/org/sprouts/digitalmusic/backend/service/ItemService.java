@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.sprouts.digitalmusic.backend.da.ItemDAO;
 import org.sprouts.digitalmusic.backend.security.UserDetailsService;
-import org.sprouts.digitalmusic.exceptions.EntityNotFoundException;
-import org.sprouts.digitalmusic.exceptions.UserNotLoggedInException;
+import org.sprouts.digitalmusic.backend.exceptions.EntityNotFoundException;
+import org.sprouts.digitalmusic.backend.exceptions.UserNotLoggedInException;
 import org.sprouts.digitalmusic.model.Customer;
 import org.sprouts.digitalmusic.model.Item;
 
